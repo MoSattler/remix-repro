@@ -1,45 +1,38 @@
-import { json } from "@remix-run/node";
-import { Form, Outlet, useActionData, Link } from "@remix-run/react";
+import { Outlet, useFetcher } from "@remix-run/react";
 
-export function action() {
-  return json({ value: "parent.tsx" });
+export async function action() {
+  return null;
 }
 
 export default function Parent() {
-  let data = useActionData<typeof action>();
+  const fetcher = useFetcher();
   return (
     <div>
-      Repro notes:
+      Requirements:
       <ol>
         <li>
-          Submit <b>parent.tsx</b> (and notice that it works!)
+          Everytime <b>parent.child.tsx</b> loader is called, render it's
+          loading indicator
         </li>
         <li>
-          <Link to="/parent/child">Go to /parent/child</Link>
-        </li>
-        <li>
-          Submit <b>parent.child._index.tsx</b> (and notice that it adds{" "}
-          <b>?index</b> at the end of URL)
-        </li>
-        <li>
-          Submit <b>parent.tsx</b> again and see error
+          Avoid using more complex patterns like contexts
         </li>
       </ol>
-      <h1>parent.tsx</h1>
-      <Form method="post">
-        <button type="submit">Submit</button>
-      </Form>
-      <pre>
-        <b>parent.tsx</b>{" "}
-        {data?.value ? (
-          <span>
-            posted successfully to <b>{data.value}</b>
-          </span>
-        ) : (
-          "has not posted yet"
-        )}
-      </pre>
+      Current problems:
+      <ol>
+        <li>
+          It works when submitting the form in <b>parent.child.tsx</b>.
+        </li>
+        <li>
+          It does <b>not</b> work when submitting the form in <b>parent.tsx</b> (even though child's loader is called).
+        </li>
+      </ol>
+
       <Outlet />
+      <h1>parent.tsx</h1>
+      <fetcher.Form method="post">
+        <button type="submit">Submit parent</button>
+      </fetcher.Form>
     </div>
   );
 }
